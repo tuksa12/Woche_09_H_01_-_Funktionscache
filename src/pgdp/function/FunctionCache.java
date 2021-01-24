@@ -15,7 +15,7 @@ public class FunctionCache {
     public static <T, R> Function<T, R> cached(Function<T, R> function, int maximalCacheSize){
         Cache cache = new Cache(maximalCacheSize);
         Function<T, R> result = t -> {
-            if(!cache.containsKey(t)){
+            if(!cache.containsKey(t)){//Use of cache to speed up the process of getting a result
                 cache.put(t,function.apply(t));
             }
             return (R) cache.get(t);
@@ -55,7 +55,7 @@ public class FunctionCache {
         };
         return result;
     }
-
+    //I wasn't able to implement both cachedRecursive methods, it keeps getting StackOverflowError
     public static <T, R> Function<T, R> cachedRecursive(BiFunction<T, Function<T, R>, R> function, int maximalCacheSize){
         Cache cache = new Cache(maximalCacheSize);
 //        Function<T, R> result = new Function<T, R>() {
@@ -75,24 +75,29 @@ public class FunctionCache {
                 return (R) cache.get(t);
             }
         };
-        return cachedRecursive(result);
+        return cachedRecursive(result,maximalCacheSize);
         }
 
+        public static int end = 0;
     public static <T, R> Function<T, R> cachedRecursive(BiFunction<T, Function<T, R>, R> function){
         Cache cache = new Cache(DEFAULT_CACHE_SIZE);
         BiFunction<T,Function<T, R>, R> result = new BiFunction<T, Function<T, R>, R>() {
             @Override
             public R apply(T t, Function<T, R> trFunction) {
                 if(!cache.containsKey(t)){
-                    cache.put(t,trFunction.apply(t));
+                    cache.put(t,function);
                 }
                 return (R) cache.get(t);
             }
         };
-        return cachedRecursive(result);
+        if(end <DEFAULT_CACHE_SIZE ){
+            return cachedRecursive(result);
+        } else {
+            return null;
+        }
 
     }
-
+    //Pair class
     private static class Pair<T, U> {
         T t;
         U u;

@@ -15,24 +15,6 @@ public class Cache<K, V> extends LinkedHashMap<K, V> {
         this.maximalCacheSize = initialCapacity;
     }
 
-//    public V get(Object key){
-//        V value;
-//        if(super.containsKey(key)){
-//            value = super.get(key);
-//            return value;
-//        }else{
-//            return null;
-//        }
-//    }
-
-    public void insert(K key, V value){
-        super.put(key, value);
-        if(super.containsKey(key)){
-            super.remove(key);
-        }
-        super.put(key,value);
-    }
-
     @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         return super.size() > maximalCacheSize;
